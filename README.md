@@ -25,10 +25,7 @@ same settings:
 
 ```text
 regular Ideogram4 model        -> ModelSamplingAuraFlow -> Spectrum Apply Ideogram 4 -> DualModelGuider.model
-unconditional Ideogram4 model -> ModelSamplingAuraFlow -> Spectrum Apply Ideogram 4 -> DualModelGuider.model_negative
-positive conditioning         ------------------------------------------------------> DualModelGuider.positive
-negative conditioning          ------------------------------------------------------> DualModelGuider.negative
-DualModelGuider                -> sampler
+unconditional Ideogram4 model  -> Spectrum Apply Ideogram 4 -> DualModelGuider.model_negative
 ```
 
 The regular model drives the shared sampler schedule; regular and unconditional
