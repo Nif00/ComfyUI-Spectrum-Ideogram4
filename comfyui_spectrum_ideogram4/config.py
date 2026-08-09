@@ -12,13 +12,13 @@ class SpectrumIdeogram4Config:
     ridge_lambda: float = 0.10
     window_size: float = 2.0
     flex_window: float = 0.75
-    warmup_steps: int = 1
-    tail_actual_steps: int = 1
-    max_history: int = 8
+    warmup_steps: int = 15
+    tail_actual_steps: int = 2
+    max_history: int = 15
     history_storage: str = "system_ram"
     debug: bool = False
     force_actual: bool = False
-    bootstrap_first_forecast: bool = True
+    bootstrap_first_forecast: bool = False
 
     @property
     def min_fit_points(self) -> int:

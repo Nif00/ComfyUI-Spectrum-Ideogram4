@@ -3,25 +3,50 @@
 ![Spectrum for Ideogram 4](SpectrumIdeogram4.png)
 
 This custom node adds Spectrum feature forecasting to ComfyUI's native
-Ideogram 4 transformer. It reduces full transformer evaluations by forecasting
-image-token features between selected actual evaluations, while retaining the
-native Ideogram output head and automatically falling back to an actual
-evaluation when the forecast is not safe.
+Ideogram 4 transformer. It forecasts image-token features between selected
+actual evaluations while retaining the native Ideogram output head and falling
+back to an actual evaluation when a forecast is not safe.
 
-## Usage
+## Installation
 
-Add `Spectrum Apply Ideogram 4` after each Ideogram 4 model you want to
-accelerate. For the two-model Ideogram workflow, use the regular model as
-`model` and the unconditional model as `model_negative` in `DualModelGuider`.
-Apply the node to both models with the same settings. Their forecast histories
-are kept separate while the sampler schedule is coordinated by the regular
-model.
+From the ComfyUI installation directory:
 
-The node requires ComfyUI's native
-`Ideogram4Transformer2DModel`. Spectrum step tracking is supported for Euler,
-Euler CFG++, RES multistep, and RES multistep CFG++; other samplers continue
-through the native path.
+```bash
+cd ComfyUI/custom_nodes
+git clone https://github.com/Nif00/ComfyUI-Spectrum-Ideogram4.git
+```
 
-The main controls are warmup and tail actual steps, forecast blend weight,
-polynomial degree, adaptive window, history size, and history storage. Enable
-debug logging when tuning or diagnosing a workflow.
+Restart ComfyUI after installation.
+
+## Workflow placement
+
+For the two-model Ideogram workflow, apply Spectrum to both models with the
+same settings:
+
+```text
+regular Ideogram4 model        -> ModelSamplingAuraFlow -> Spectrum Apply Ideogram 4 -> DualModelGuider.model
+unconditional Ideogram4 model -> ModelSamplingAuraFlow -> Spectrum Apply Ideogram 4 -> DualModelGuider.model_negative
+positive conditioning         ------------------------------------------------------> DualModelGuider.positive
+negative conditioning          ------------------------------------------------------> DualModelGuider.negative
+DualModelGuider                -> sampler
+```
+
+The regular model drives the shared sampler schedule; regular and unconditional
+forecast histories remain separate. If CFG is 1, the negative model is skipped.
+
+## Default settings
+
+| Setting | Default |
+| --- | ---: |
+| Blend weight | `0.50` |
+| Degree | `1` |
+| Ridge lambda | `0.1` |
+| Window size | `2.0` |
+| Flex window | `0.75` |
+| Warmup steps | `15` |
+| Tail actual steps | `2` |
+| Max history | `15` |
+
+The node requires ComfyUI's native `Ideogram4Transformer2DModel`. Spectrum step
+tracking is supported for Euler, Euler CFG++, RES multistep, and RES multistep
+CFG++; other samplers continue through the native path.
